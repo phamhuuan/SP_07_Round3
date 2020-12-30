@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React, {useCallback, useEffect, useState} from "react";
 import {useHistory, useLocation} from "react-router-dom";
-import { handlePostRequest } from "../../api/api";
+import { handleDeleteRequest, handlePostRequest } from "../../api/api";
 import ApiUrl from "../../constants/ApiUrl";
 import Checkout from "./components";
 import {ToastContainer, toast} from 'react-toastify';
@@ -81,7 +81,7 @@ const CheckoutContainer = () => {
 		}
 	}, [getCart, getUserInfoFromToken, history, location.pathname, location.search]);
 
-	const checkout = () => {
+	const checkout = async () => {
 		if (firstName.trim() === '') {
 			toast('You must enter first name', {type: 'error'});
 		}
@@ -102,6 +102,31 @@ const CheckoutContainer = () => {
 		}
 		if (!validatePhoneNumber(phoneNumber.trim())) {
 			toast('Invalid phone number', {type: 'error'});
+		}
+		const config = {
+			headers: {
+				Accept: "application/json",
+				"Content-Type": "application/json",
+			},
+			timeout: 10000,
+		};
+		const body = {
+			userId: JSON.parse(sessionStorage.getItem('user')).id,
+			items: cart,
+			address: address.trim(),
+			firstName: firstName.trim(),
+			lastName: lastName.trim(),
+			email: email.trim(),
+			phoneNumber: phoneNumber.trim(),
+		}
+		const response = await handlePostRequest(ApiUrl.URL_CreateOrder, config, body);
+		if (response && response.status === 200) {
+			toast('Order success', {type: 'success'});
+			handleDeleteRequest(ApiUrl.URL_RemoveAllFromCart(JSON.parse(sessionStorage.getItem('user')).id), config);
+			const token = sessionStorage.getItem('token');
+			let url = `https://laravel-product-site.herokuapp.com?token=${token}`;
+			url = url.split('"').join('');
+			window.location.href = url;
 		}
 	};
 

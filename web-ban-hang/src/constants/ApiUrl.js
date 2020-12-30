@@ -4,6 +4,7 @@ const ApiUrl = {
 	URL_RemoveFromCart: (id, cartId) => `https://web-ban-hang-server.herokuapp.com/api/cart/remove/user/${id}/cart/${cartId}`,
 	URL_RemoveAllFromCart: (id, cartId) => `https://web-ban-hang-server.herokuapp.com/api/cart/remove/user/${id}`,
 	URL_UpdateAmount: 'https://web-ban-hang-server.herokuapp.com/api/cart/amount/update',
+	URL_CreateOrder: 'https://ordermanager.herokuapp.com/api/order',
 };
 
 export default ApiUrl;
